@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import { DealRepository } from "../../database";
 import { ItemResponse, ItemsResponse } from "../../models/response.model";
 import { Deal, DealStatus } from "../../models";
@@ -10,7 +10,11 @@ export class DealController {
     this.dealRepo = dealRepo;
   }
 
-  async getDeals(req: Request, res: Response, next: NextFunction) {
+  getDeals: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const deals = await this.dealRepo.findAll();
       const response: ItemsResponse<Deal> = {
@@ -18,13 +22,17 @@ export class DealController {
         success: true,
         items: deals,
       };
-      return res.status(200).json(response);
+      res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async getDealsByAccountId(req: Request, res: Response, next: NextFunction) {
+  getDealsByAccountId: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const accountId = parseInt(req.params.account_id);
       const deals = await this.dealRepo.findByAccountId(accountId);
@@ -35,25 +43,25 @@ export class DealController {
           success: false,
           items: [],
         };
-        return res.status(404).json(response);
+        res.status(404).json(response);
+      } else {
+        const response: ItemsResponse<Deal> = {
+          message: "Deals retrieved successfully",
+          success: true,
+          items: deals,
+        };
+        res.status(200).json(response);
       }
-
-      const response: ItemsResponse<Deal> = {
-        message: "Deals retrieved successfully",
-        success: true,
-        items: deals,
-      };
-      return res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async getDealsByOrganizationId(
+  getDealsByOrganizationId: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ) {
+  ) => {
     try {
       const organizationId = parseInt(req.params.organization_id);
       const deals = await this.dealRepo.findByOrganizationId(organizationId);
@@ -64,21 +72,25 @@ export class DealController {
           success: false,
           items: [],
         };
-        return res.status(404).json(response);
+        res.status(404).json(response);
+      } else {
+        const response: ItemsResponse<Deal> = {
+          message: "Deals retrieved successfully",
+          success: true,
+          items: deals,
+        };
+        res.status(200).json(response);
       }
-
-      const response: ItemsResponse<Deal> = {
-        message: "Deals retrieved successfully",
-        success: true,
-        items: deals,
-      };
-      return res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async getDealsByStatus(req: Request, res: Response, next: NextFunction) {
+  getDealsByStatus: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const status = req.params.status as DealStatus;
       const deals = await this.dealRepo.findByStatus(status);
@@ -89,21 +101,25 @@ export class DealController {
           success: false,
           items: [],
         };
-        return res.status(404).json(response);
+        res.status(404).json(response);
+      } else {
+        const response: ItemsResponse<Deal> = {
+          message: "Deals retrieved successfully",
+          success: true,
+          items: deals,
+        };
+        res.status(200).json(response);
       }
-
-      const response: ItemsResponse<Deal> = {
-        message: "Deals retrieved successfully",
-        success: true,
-        items: deals,
-      };
-      return res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async createDeal(req: Request, res: Response, next: NextFunction) {
+  createDeal: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const dealData = req.body;
       const newDeal = await this.dealRepo.create(dealData);
@@ -112,13 +128,17 @@ export class DealController {
         success: true,
         items: [newDeal],
       };
-      return res.status(201).json(response);
+      res.status(201).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async updateDeal(req: Request, res: Response, next: NextFunction) {
+  updateDeal: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const dealId = parseInt(req.params.id);
       const dealData = req.body;
@@ -130,21 +150,25 @@ export class DealController {
           success: false,
           items: [],
         };
-        return res.status(404).json(response);
+        res.status(404).json(response);
+      } else {
+        const response: ItemResponse<Deal> = {
+          message: "Deal updated successfully",
+          success: true,
+          item: updatedDeal,
+        };
+        res.status(200).json(response);
       }
-
-      const response: ItemsResponse<Deal> = {
-        message: "Deal updated successfully",
-        success: true,
-        items: [updatedDeal],
-      };
-      return res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async deleteDeal(req: Request, res: Response, next: NextFunction) {
+  deleteDeal: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const dealId = parseInt(req.params.id);
       const deletedDeal = await this.dealRepo.delete(dealId);
@@ -155,17 +179,17 @@ export class DealController {
           success: false,
           item: "",
         };
-        return res.status(404).json(response);
+        res.status(404).json(response);
+      } else {
+        const response: ItemResponse<boolean> = {
+          message: "Deal deleted successfully",
+          success: true,
+          item: deletedDeal,
+        };
+        res.status(200).json(response);
       }
-
-      const response: ItemResponse<boolean> = {
-        message: "Deal deleted successfully",
-        success: true,
-        item: deletedDeal,
-      };
-      return res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 }

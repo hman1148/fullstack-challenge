@@ -2,8 +2,17 @@ import express from "express";
 import cors from "cors";
 import initializeDatabase from "./database/db";
 import createRepositories from "./database/repo.factory";
-import { OrganizationController } from "./controllers";
-import { createOrganizationRoutes } from "./routes/organizations.routes";
+import {
+  AccountController,
+  DealController,
+  OrganizationController,
+} from "./controllers";
+import {
+  createAccountRoutes,
+  createDealRoutes,
+  createOrganizationRoutes,
+} from "./routes";
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -22,12 +31,16 @@ const repositories = createRepositories();
 // create controllers
 const organizationController: OrganizationController =
   new OrganizationController(repositories.organizationRepo);
+const accountController = new AccountController(repositories.accountRepo);
+const dealController = new DealController(repositories.dealRepo);
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/organizations", createOrganizationRoutes(organizationController));
+app.use("/api/accounts", createAccountRoutes(accountController));
+app.use("/api/deals", createDealRoutes(dealController));
 
 app.get("/", (req, res) => {
   const rows = db.prepare("SELECT * FROM organizations").all();

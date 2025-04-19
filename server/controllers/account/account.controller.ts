@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import { AccountRepository } from "../../database";
 import { Account } from "../../models";
 import { ItemResponse, ItemsResponse } from "../../models/response.model";
@@ -10,7 +10,11 @@ export class AccountController {
     this.accountRepo = accountRepo;
   }
 
-  async getAccounts(req: Request, res: Response, next: NextFunction) {
+  getAccounts: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const accounts = await this.accountRepo.findAll();
       const response: ItemsResponse<Account> = {
@@ -18,13 +22,17 @@ export class AccountController {
         success: true,
         items: accounts,
       };
-      return res.status(200).json(response);
+      res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async getAccountById(req: Request, res: Response, next: NextFunction) {
+  getAccountById: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const accountId = parseInt(req.params.id);
       const account = await this.accountRepo.findById(accountId);
@@ -35,25 +43,25 @@ export class AccountController {
           success: false,
           items: [],
         };
-        return res.status(404).json(response);
+        res.status(404).json(response);
+      } else {
+        const response: ItemResponse<Account> = {
+          message: "Account retrieved successfully",
+          success: true,
+          item: account,
+        };
+        res.status(200).json(response);
       }
-
-      const response: ItemsResponse<Account> = {
-        message: "Account retrieved successfully",
-        success: true,
-        items: [account],
-      };
-      return res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async getAccountsByOrganizationId(
+  getAccountsByOrganizationId: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ) {
+  ) => {
     try {
       const organizationId = parseInt(req.params.organization_id);
       const accounts = await this.accountRepo.findByOrganizationId(
@@ -66,21 +74,25 @@ export class AccountController {
           success: false,
           items: [],
         };
-        return res.status(404).json(response);
+        res.status(404).json(response);
+      } else {
+        const response: ItemsResponse<Account> = {
+          message: "Accounts retrieved successfully",
+          success: true,
+          items: accounts,
+        };
+        res.status(200).json(response);
       }
-
-      const response: ItemsResponse<Account> = {
-        message: "Accounts retrieved successfully",
-        success: true,
-        items: accounts,
-      };
-      return res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async createAccount(req: Request, res: Response, next: NextFunction) {
+  createAccount: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const accountData = req.body;
       const newAccount = await this.accountRepo.create(accountData);
@@ -89,13 +101,17 @@ export class AccountController {
         success: true,
         items: [newAccount],
       };
-      return res.status(201).json(response);
+      res.status(201).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async updateAccount(req: Request, res: Response, next: NextFunction) {
+  updateAccount: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const accountId = parseInt(req.params.id);
       const accountData = req.body;
@@ -110,20 +126,25 @@ export class AccountController {
           success: false,
           items: [],
         };
-        return res.status(404).json(response);
+        res.status(404).json(response);
+      } else {
+        const response: ItemResponse<Account> = {
+          message: "Account updated successfully",
+          success: true,
+          item: updatedAccount,
+        };
+        res.status(200).json(response);
       }
-      const response: ItemResponse<Account> = {
-        message: "Account updated successfully",
-        success: true,
-        item: updatedAccount,
-      };
-      return res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  async deleteAccount(req: Request, res: Response, next: NextFunction) {
+  deleteAccount: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const accountId = parseInt(req.params.id);
       const deletedAccount = await this.accountRepo.delete(accountId);
@@ -134,17 +155,17 @@ export class AccountController {
           success: false,
           item: "",
         };
-        return res.status(404).json(response);
+        res.status(404).json(response);
+      } else {
+        const response: ItemResponse<string> = {
+          message: "Account deleted successfully",
+          success: true,
+          item: "Account deleted successfully",
+        };
+        res.status(200).json(response);
       }
-
-      const response: ItemResponse<string> = {
-        message: "Account deleted successfully",
-        success: true,
-        item: "Account deleted successfully",
-      };
-      return res.status(200).json(response);
     } catch (error) {
       next(error);
     }
-  }
+  };
 }
