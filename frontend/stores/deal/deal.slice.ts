@@ -1,6 +1,5 @@
-import { PayloadAction } from "./../../node_modules/@reduxjs/toolkit/src/createAction";
-import { createSlice } from "./../../node_modules/@reduxjs/toolkit/src/createSlice";
 import { Deal } from "../../models";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type DealState = {
   deals: Deal[];

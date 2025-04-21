@@ -3,6 +3,8 @@ import { persistStore, persistReducer } from "redux-persist";
 
 import createWebStorage from "redux-persist/es/storage/createWebStorage";
 import dealOptionReducer from "./deal/deal.slice";
+import organizationReducer from "./organizations/organization.slice";
+import accountReducer from "./accounts/account.slice";
 
 const createNoopStorage = () => {
   return {
@@ -28,15 +30,37 @@ const dealOptionsPersistConfig = {
   storage: localStorageFallBack,
 };
 
+const organizationOptionsPersistConfig = {
+  key: "organizationOptions",
+  storage: localStorageFallBack,
+};
+
+const accountOptionsPersistConfig = {
+  key: "accountOptions",
+  storage: localStorageFallBack,
+};
+
 // Create Persisted Reducer
 const persistDealReducer = persistReducer(
   dealOptionsPersistConfig,
   dealOptionReducer
 );
 
+const persistOrganizationReducer = persistReducer(
+  organizationOptionsPersistConfig,
+  organizationReducer
+);
+
+const persistAccountReducer = persistReducer(
+  accountOptionsPersistConfig,
+  accountReducer
+);
+
 export const store = configureStore({
   reducer: {
     dealOptions: persistDealReducer,
+    accountOptions: persistAccountReducer,
+    organizationOptions: persistOrganizationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
