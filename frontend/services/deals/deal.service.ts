@@ -1,4 +1,10 @@
-import { Deal, devConfig, ItemResponse, ItemsResponse } from "../../models";
+import {
+  Deal,
+  DealStatus,
+  devConfig,
+  ItemResponse,
+  ItemsResponse,
+} from "../../models";
 import {
   addDeal,
   removeDeal,
@@ -164,6 +170,66 @@ export class DealService {
     }
   }
 
+  // Add this method to your DealService class
+  async fetchDealsByFilters(
+    organizationId?: number,
+    accountId?: number,
+    filters?: {
+      status?: DealStatus | null;
+      year?: number | null;
+      search?: string;
+    }
+  ): Promise<void> {
+    store.dispatch(setLoading(true));
+
+    try {
+      // Build query parameters
+      const params = new URLSearchParams();
+
+      if (filters?.status) {
+        params.append("status", filters.status);
+      }
+
+      if (filters?.year) {
+        params.append("year", filters.year.toString());
+      }
+
+      if (filters?.search) {
+        params.append("search", filters.search);
+      }
+
+      let url: string;
+
+      // Determine which endpoint to use based on provided IDs
+      if (organizationId) {
+        url = `${this.baseUrl}/organization/${organizationId}`;
+      } else if (accountId) {
+        url = `${this.baseUrl}/account/${accountId}`;
+      } else {
+        url = this.baseUrl;
+      }
+
+      // Add the query string to the URL if there are parameters
+      const queryString = params.toString();
+      if (queryString) {
+        url = `${url}?${queryString}`;
+      }
+
+      const { data } = await this.http.get<ItemsResponse<Deal>>(url);
+
+      if (data.success) {
+        store.dispatch(setDeals(data.items));
+      } else {
+        store.dispatch(setError(data.message || "Failed to fetch deals"));
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
+      store.dispatch(setError(errorMessage));
+    } finally {
+      store.dispatch(setLoading(false));
+    }
+  }
   calculateTotalDealValue(): number {
     const state = store.getState().dealOptions;
     return state.deals.reduce((total, deal) => total + deal.value, 0);

@@ -3,7 +3,7 @@ import { RootState } from "../store";
 import { useEffect, useCallback } from "react";
 import { dealService } from "../../services/deals/deal.service";
 import { setSelectedDeal, clearError } from "./deal.slice";
-import { Deal } from "../../models";
+import { Deal, DealStatus } from "../../models";
 
 export const useDeals = (accountId?: number) => {
   const dispatch = useDispatch();
@@ -46,6 +46,21 @@ export const useDeals = (accountId?: number) => {
     }
   }, [accountId]);
 
+  const fetchDealsByFilter = useCallback(
+    (
+      organizationId?: number,
+      accountId?: number,
+      filters?: {
+        status?: DealStatus | null;
+        year?: number | null;
+        search?: string;
+      }
+    ) => {
+      dealService.fetchDealsByFilters(organizationId, accountId, filters);
+    },
+    []
+  );
+
   const createDeal = useCallback(async (dealData: Deal) => {
     return await dealService.createDeal(dealData);
   }, []);
@@ -79,6 +94,7 @@ export const useDeals = (accountId?: number) => {
     selectDeal,
     clearSelectedDeal,
     refreshDeals,
+    fetchDealsByFilter,
     createDeal,
     updateDeal,
     deleteDeal,
