@@ -1,19 +1,30 @@
-function App() {
+import { useState } from "react"
+import OrganizationSelector from "./organization/organization-selector.component";
+import DealList from "./deal/deal.component";
+
+const App = () => {
+  const [selectedOrgId, setSelectedOrgId] = useState<number | null>(null);
 
   return (
-    <div>
-      <h1>🎉 Welcome to the Fullstack Challenge! 🎉</h1>
-      <p>Replace the content here with your own code and organize files as you see fit</p>
-      <h2>Rules</h2>
-      <ul>
-        <li>Spend no more than 4 hours working on the challenge</li>
-        <li>Make use of any libraries and tools that you like </li>
-        <li>Feel free to use help from LLMs but be prepared to explain your code and the choices you made</li>
-        <li>Commit as you go. We want to see your thought process</li>
-      </ul>
-      <p>Good luck!</p>
+    <div className="p-4">
+      <div className="flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 className="text-3xl font-bold">SponserCX Dashboard</h1>
+          <p className="text-600">Manage your organization's sponserships and deals</p>
+        </div>
+
+        <div className="mt-3 md:mt-0">
+          <OrganizationSelector 
+            value={selectedOrgId}
+            onChange={setSelectedOrgId}
+            className="w-full md:w-20rem"
+            />
+        </div>
+      </div>
+      <DealList organizationId={selectedOrgId || undefined} />
     </div>
   )
+
 }
 
 export default App

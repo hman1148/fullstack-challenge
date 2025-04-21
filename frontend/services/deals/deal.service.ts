@@ -1,3 +1,4 @@
+import axios, { AxiosInstance } from "axios";
 import {
   Deal,
   DealStatus,
@@ -15,7 +16,6 @@ import {
   updateDealInStore,
 } from "../../stores/deal/deal.slice";
 import { store } from "../../stores/store";
-import axios, { AxiosInstance } from "./../../node_modules/axios/index.d";
 export class DealService {
   readonly http: AxiosInstance;
   readonly baseUrl: string;
